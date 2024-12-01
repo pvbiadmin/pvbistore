@@ -1,27 +1,36 @@
-I'll walk you through the entire process from the initial problem statement to the formulation of the solution for the affiliate marketing system in Laravel 10.
+### **I'll walk you through the entire process from the initial problem statement to the formulation of the solution for the affiliate marketing system in Laravel 10.**
 
-1. Problem Statement:
+### 1. **Problem Statement:**
+
 The task was to create an affiliate marketing system in Laravel 10 with the following requirements:
+
 - Users can share affiliate links to other users.
-- When the link is clicked, it redirects to a product details page, if user was logged in, otherwise the user will be required to login first.
+- When the link is clicked, it redirects to a product details page, if user was logged in, otherwise the user will be
+  required to login first.
 - The seller (affiliate) who owns the link earns a percentage of the item's price.
 - The buyer who clicks the link receives a percentage discount on the item's price.
 
-2. Analysis and Planning:
+### 2. **Analysis and Planning:**
+
 Based on the requirements, we identified the key components needed:
+
 - User management (for both affiliates and buyers)
 - Product management
 - Affiliate link generation and tracking
 - Order processing with discount and commission calculation
 
-3. Database Design:
+### 3. **Database Design:**
+
 We designed the database schema, including tables for:
+
 - Users (including affiliate information)
 - Products (with pricing and affiliate percentages)
 - Affiliate Links (to track links and clicks)
 - Orders (to record sales, discounts, and commissions)
 
 // database/migrations/xxxx_xx_xx_create_affiliate_links_table.php
+
+```bash 
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -47,8 +56,11 @@ class CreateAffiliateLinksTable extends Migration
         Schema::dropIfExists('affiliate_links');
     }
 }
+```
 
 // database/migrations/xxxx_xx_xx_create_orders_table.php
+
+```bash 
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -76,16 +88,20 @@ class CreateOrdersTable extends Migration
         Schema::dropIfExists('orders');
     }
 }
+```
 
+### 4. **Model Creation:**
 
-4. Model Creation:
 We created Laravel models to interact with these database tables:
+
 - User
 - Product
 - AffiliateLink
 - Order
 
 // app/Models/User.php
+
+```bash 
 <?php
 
 namespace App\Models;
@@ -125,8 +141,11 @@ class User extends Authenticatable
         $this->save();
     }
 }
+```
 
 // app/Models/AffiliateLink.php
+
+```bash 
 <?php
 
 namespace App\Models;
@@ -155,8 +174,11 @@ class AffiliateLink extends Model
         return $this->belongsTo(Product::class);
     }
 }
+```
 
 // app/Models/Product.php
+
+```bash 
 <?php
 
 namespace App\Models;
@@ -181,8 +203,11 @@ class Product extends Model
         return $this->hasMany(AffiliateLink::class);
     }
 }
+```
 
 // app/Models/Order.php
+
+```bash 
 <?php
 
 namespace App\Models;
@@ -218,13 +243,18 @@ class Order extends Model
         return $this->belongsTo(AffiliateLink::class);
     }
 }
+```
 
-5. Controller Logic:
+### 5. **Controller Logic:**
+
 We implemented controllers to handle the main functionalities:
+
 - AffiliateController: For generating affiliate links and handling redirects
 - CheckoutController: For processing orders and applying discounts/commissions
 
 // app/Http/Controllers/AffiliateController.php
+
+```bash 
 <?php
 
 namespace App\Http\Controllers;
@@ -269,8 +299,11 @@ class AffiliateController extends Controller
         return redirect()->route('checkout', $productId);
     }
 }
+```
 
 // app/Http/Controllers/CheckoutController.php
+
+```bash 
 <?php
 
 namespace App\Http\Controllers;
@@ -341,11 +374,15 @@ class CheckoutController extends Controller
         return redirect()->route('order.confirmation', $order);
     }
 }
+```
 
-6. Route Definition:
+### 6. **Route Definition:**
+
 We defined routes to connect user actions to controller methods.
 
 // routes/web.php
+
+```bash 
 <?php
 
 use App\Http\Controllers\AffiliateController;
@@ -358,29 +395,38 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::get('/go/{code}', [AffiliateController::class, 'redirectToCheckout'])->name('affiliate.redirect');
+```
 
-7. Implementation Details:
+### 7. **Implementation Details:**
+
 a) Affiliate Link Generation:
-   - We added a `generateAffiliateCode()` method to the User model.
-   - In the AffiliateController, we ensure each user has a unique affiliate code.
-   - Affiliate links are generated using the user's affiliate code and product ID.
+
+- We added a `generateAffiliateCode()` method to the User model.
+- In the AffiliateController, we ensure each user has a unique affiliate code.
+- Affiliate links are generated using the user's affiliate code and product ID.
 
 b) Link Redirection:
-   - When an affiliate link is clicked, it's recorded and the user is redirected to the checkout page.
+
+- When an affiliate link is clicked, it's recorded and the user is redirected to the checkout page.
 
 c) Checkout Process:
-   - The system checks for an affiliate code in the session.
-   - If present, it calculates the buyer's discount and the affiliate's commission.
-   - An order is created with the calculated amounts.
 
-8. Refinement:
+- The system checks for an affiliate code in the session.
+- If present, it calculates the buyer's discount and the affiliate's commission.
+- An order is created with the calculated amounts.
+
+### 8. **Refinement:**
+
 Based on your feedback, we refined the system to make better use of the `affiliate_code`:
+
 - Each user now has a single, persistent affiliate code for all their links.
 - The code is generated only when a user first creates an affiliate link.
 - We updated the controllers to use this affiliate code for lookups and attribution.
 
-9. Final Solution:
+### 9. **Final Solution:**
+
 The final solution includes:
+
 - Migrations for creating necessary database tables
 - Models (User, Product, AffiliateLink, Order) with relationships and methods
 - Controllers (AffiliateController, CheckoutController) handling the core logic
@@ -388,19 +434,19 @@ The final solution includes:
 - A system that allows for easy tracking of affiliate sales and commission calculation
 
 This solution provides a flexible and efficient affiliate marketing system that:
+
 - Allows users to generate unique affiliate links
 - Tracks clicks on these links
 - Applies discounts to buyers using affiliate links
 - Calculates commissions for affiliates when a sale is made
 - Maintains a record of all transactions for reporting and payout purposes
 
-The system is designed to be scalable and can be further enhanced with features like an affiliate dashboard, payout management, and detailed analytics.
+The system is designed to be scalable and can be further enhanced with features like an affiliate dashboard, payout
+management, and detailed analytics.
 
-Pleasde add any improvements, if you can find any.
-
-// here's the improvements
-
-To implement the 10 suggested improvements, we will make additions to the existing code structure. I'll guide you through each enhancement step by step, starting with the essential pieces needed for each improvement. For brevity, I'll summarize where code changes will happen and provide code snippets where necessary.
+To implement the 10 suggested improvements, we will make additions to the existing code structure. I'll guide you
+through each enhancement step by step, starting with the essential pieces needed for each improvement. For brevity, I'll
+summarize where code changes will happen and provide code snippets where necessary.
 
 ---
 
@@ -409,7 +455,8 @@ To implement the 10 suggested improvements, we will make additions to the existi
 Create a dashboard view and controller for affiliates to track clicks, commissions, and sales.
 
 #### Controller: `AffiliateDashboardController.php`
-```php
+
+```bash
 <?php
 
 namespace App\Http\Controllers;
@@ -435,12 +482,14 @@ class AffiliateDashboardController extends Controller
 ```
 
 #### Route:
-```php
+
+```bash
 Route::get('/affiliate/dashboard', [AffiliateDashboardController::class, 'index'])->name('affiliate.dashboard');
 ```
 
 #### View: `resources/views/affiliate/dashboard.blade.php`
-```php
+
+```bash
 @extends('layouts.app')
 
 @section('content')
@@ -464,7 +513,8 @@ Route::get('/affiliate/dashboard', [AffiliateDashboardController::class, 'index'
 Create a `Payout` model and table for tracking payouts, and allow affiliates to request withdrawals.
 
 #### Migration: `xxxx_xx_xx_create_payouts_table.php`
-```php
+
+```bash
 Schema::create('payouts', function (Blueprint $table) {
     $table->id();
     $table->foreignId('affiliate_id')->constrained('users');
@@ -475,7 +525,8 @@ Schema::create('payouts', function (Blueprint $table) {
 ```
 
 #### Model: `Payout.php`
-```php
+
+```bash
 <?php
 
 namespace App\Models;
@@ -494,7 +545,8 @@ class Payout extends Model
 ```
 
 #### Controller: `PayoutController.php`
-```php
+
+```bash
 <?php
 
 namespace App\Http\Controllers;
@@ -524,7 +576,8 @@ class PayoutController extends Controller
 ```
 
 #### Route:
-```php
+
+```bash
 Route::post('/affiliate/payout', [PayoutController::class, 'requestPayout'])->name('affiliate.payout');
 ```
 
@@ -535,14 +588,16 @@ Route::post('/affiliate/payout', [PayoutController::class, 'requestPayout'])->na
 Add a referral bonus system by tracking when a user registers through an affiliate link.
 
 #### Migration: Add `referred_by` to `users` table.
-```php
+
+```bash
 Schema::table('users', function (Blueprint $table) {
     $table->foreignId('referred_by')->nullable()->constrained('users');
 });
 ```
 
 #### Referral Bonus in AffiliateController:
-```php
+
+```bash
 if ($request->has('referral_code')) {
     $referrer = User::where('affiliate_code', $request->referral_code)->first();
     if ($referrer) {
@@ -562,14 +617,16 @@ if ($request->has('referral_code')) {
 Change discount handling from automatic to a coupon code system.
 
 #### Add `coupon_code` to Products:
-```php
+
+```bash
 Schema::table('products', function (Blueprint $table) {
     $table->string('coupon_code')->nullable();
 });
 ```
 
 #### Update `CheckoutController.php`:
-```php
+
+```bash
 if ($request->has('coupon_code')) {
     $coupon = $product->coupon_code;
     if ($coupon && $coupon === $request->coupon_code) {
@@ -585,7 +642,8 @@ if ($request->has('coupon_code')) {
 Set up email notifications for affiliate-related events.
 
 #### Notification: `CommissionEarnedNotification.php`
-```php
+
+```bash
 <?php
 
 namespace App\Notifications;
@@ -616,8 +674,10 @@ class CommissionEarnedNotification extends Notification
 ```
 
 #### Trigger Email Notification:
+
 In `CheckoutController`:
-```php
+
+```bash
 if ($affiliateUser) {
     $affiliateUser->notify(new CommissionEarnedNotification($commission));
 }
@@ -630,7 +690,8 @@ if ($affiliateUser) {
 Instead of generating a new affiliate code each time, ensure it's created once and persisted.
 
 #### Modify `generateAffiliateCode` Method in User Model:
-```php
+
+```bash
 public function generateAffiliateCode()
 {
     if (!$this->affiliate_code) {
@@ -651,7 +712,8 @@ public function generateAffiliateCode()
 Prevent click fraud by adding rate-limiting.
 
 #### Middleware: `RateLimitAffiliateClicks.php`
-```php
+
+```bash
 <?php
 
 namespace App\Http\Middleware;
@@ -678,7 +740,8 @@ class RateLimitAffiliateClicks
 ```
 
 #### Apply Middleware:
-```php
+
+```bash
 Route::middleware(['ratelimit:affiliate.clicks'])->get('/go/{code}', [AffiliateController::class, 'redirectToCheckout']);
 ```
 
@@ -689,15 +752,18 @@ Route::middleware(['ratelimit:affiliate.clicks'])->get('/go/{code}', [AffiliateC
 For commission splitting, modify the `Order` model and add logic to handle multiple affiliates.
 
 #### Modify `orders` table migration:
-```php
+
+```bash
 Schema::table('orders', function (Blueprint $table) {
     $table->foreignId('second_affiliate_link_id')->nullable()->constrained('affiliate_links');
 });
 ```
 
 #### Update Commission Logic:
+
 In `CheckoutController`:
-```php
+
+```bash
 $firstAffiliateCommission = $product->price * 0.05; // 5% to first affiliate
 $secondAffiliateCommission = $product->price * 0.02; // 2% to second affiliate
 ```
@@ -707,6 +773,7 @@ $secondAffiliateCommission = $product->price * 0.02; // 2% to second affiliate
 ### 9. **Advanced Analytics**
 
 Integrate with Google Analytics for advanced tracking:
+
 - Use Google Analytics tags or a library like `spatie/laravel-analytics` to track detailed data.
 
 ```bash
@@ -718,11 +785,13 @@ composer require spatie/laravel-analytics
 ### 10. **Multilingual and Multi-currency Support**
 
 Install Laravel Localization:
+
 ```bash
 composer require mcamara/laravel-localization
 ```
 
-Configure `config/app.php` for multiple languages and use currency conversion libraries like `florianv/laravel-swap` for currency exchange.
+Configure `config/app.php` for multiple languages and use currency conversion libraries like `florianv/laravel-swap` for
+currency exchange.
 
 ---
 
